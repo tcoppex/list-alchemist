@@ -1,4 +1,4 @@
-## List Alchemist
+## ⚗ List Alchemist
 
 Simple web tool for converting a list of strings using Regular Expressions and custom templates.
 
