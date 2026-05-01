@@ -7,20 +7,22 @@
     <title>⚗ List Alchemist</title>
 
     <style>
-        body {
+       body {
             background-color: #f4ece4;
-            padding: 40px;
+            padding: 20px 15px;
             color: #4a3728;
             font-family: Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .container {
+            width: 100%;
             max-width: 800px;
             margin: 0 auto;
+            padding: 25px 20px;
             background: #ffffff;
-            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(180, 140, 120, 0.15);
+            box-sizing: border-box;
         }
 
         h1 {
@@ -39,11 +41,12 @@
 
         textarea, input {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 1.5px solid #e2d1c3;
             border-radius: 8px;
             box-sizing: border-box;
             font-family: 'Courier New', monospace;
+            font-size: 16px;
             background-color: #fafdfb;
             transition: border-color 0.3s ease;
         }
@@ -59,7 +62,7 @@
         button {
             margin-top: 25px;
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: #d19a8e;
             color: white;
             border: none;
@@ -94,6 +97,7 @@
         }
 
         #qrcode canvas, #qrcode img {
+            max-width: 100%;
             margin: 0 auto;
             display: block;
         }
