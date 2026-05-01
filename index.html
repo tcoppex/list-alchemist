@@ -92,10 +92,15 @@
             border-radius: 8px;
             border-left: 5px solid #b36a5b;
         }
+
+        #qrcode canvas, #qrcode img {
+            margin: 0 auto;
+            display: block;
+        }
     </style>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -133,10 +138,81 @@ http://www.archive.net/65</textarea>
             <label for="outputResult"><strong>Result</strong></label>
             <textarea id="outputResult" rows="5" cols="50" readonly placeholder=""></textarea>
         </div>
+
+
+        <div>
+            <button onclick="generateShareLink()" style="background-color: #6c757d;">
+                <span class="material-symbols-outlined">share</span>
+                <strong>Generate configuration URL</strong>
+            </button>
+            <span id="shareMessage" style="display:none; color: green; margin-left: 10px;">URL copied!</span>
+
+            <div id="qrcode-container" style="margin-top: 20px; display: none; text-align: center; flex-direction: column; align-items: center;">
+                <p>
+                <div id="qrcode"></div>
+                <p><small>configuration QR code</small></p>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const regexParam = urlParams.get('regex');
+        const templateParam = urlParams.get('template');
+        const inputParam = urlParams.get('list');
+
+        if (regexParam) document.getElementById('regexInput').value = regexParam;
+        if (templateParam) document.getElementById('templateInput').value = templateParam;
+        if (inputParam) document.getElementById('inputList').value = inputParam;
+
+        if (regexParam || templateParam) {
+            transform();
+        }
+    };
+
+    function generateShareLink() {
+        /* Create URL parameters, update current URL and copy to clipboard. */
+
+        const regex = document.getElementById('regexInput').value;
+        const template = document.getElementById('templateInput').value;
+        // const list = document.getElementById('inputList').value;
+
+        const url = new URL(window.location.href.split('?')[0]);
+        url.searchParams.set('regex', regex);
+        url.searchParams.set('template', template);
+        // url.searchParams.set('list', list);
+
+        const fullUrl = url.toString();
+
+        navigator.clipboard.writeText(fullUrl).then(() => {
+            const msg = document.getElementById('shareMessage');
+            msg.style.display = 'inline';
+            setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        });
+
+        window.history.pushState({}, '', url);
+
+        /* Generate a configuration QR code. */
+
+        const qrContainer = document.getElementById('qrcode-container');
+        const qrImg = document.getElementById('qrcode');
+
+        qrImg.innerHTML = "";
+        new QRCode(qrImg, {
+            text: fullUrl,
+            width: 256,
+            height: 256,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        qrContainer.style.display = 'inline';
+    }
+
     function transform() {
         const inputList = document.getElementById('inputList').value.split('\n');
         const regexStr = document.getElementById('regexInput').value;
@@ -156,10 +232,10 @@ http://www.archive.net/65</textarea>
                 const match = line.match(re);
                 if (match && match.groups) {
                     let formatted = template;
+                    formatted = formatted.replaceAll(`%s`, line)
                     Object.keys(match.groups).forEach(key => {
                         const val = match.groups[key] || "";
                         formatted = formatted.replaceAll(`{${key}}`, val);
-                        formatted = formatted.replaceAll(`%s`, line)
                     });
                     results.push(formatted);
                 } else {
